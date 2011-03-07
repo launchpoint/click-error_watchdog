@@ -1,0 +1,3 @@
+<?
+
+ErrorLog::delete_all();

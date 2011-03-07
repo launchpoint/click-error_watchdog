@@ -1,0 +1,69 @@
+.panel
+  .title
+    =se("PHP Exceptions")
+  .body
+    %table
+      %tr
+        %th
+        %th =se("Message")
+        %th Line
+        %th First
+        %th Last
+      -foreach($errs as $e)
+        %tr
+          %td
+            %div{:onclick=>"\$('#details_{$e->id}').toggle();"}
+              view
+            %a{:href=>delete_error_log_url($e)} delete
+          %td
+            +$e->message
+          %td
+            =ago($e->created_at)
+          %td
+            =ago($e->updated_at)
+        %tr{:id=>"details_{$e->id}", :style=>"display:none"}
+          %td{:colspan=>6}
+            Message
+            %div{:style=>'overflow:auto; width:600px;border:1px solid black;padding:3px'}
+              =simple_format($e->message)
+              %p
+                =$e->fpath . ':' . $e->line_number
+
+            Backtrace
+            %div{:style=>'overflow:auto; width:600px;border:1px solid black;padding:3px'}
+              %table
+                %tr
+                  %th Function
+                  %th File
+                  %th Line
+                  %th Params
+                -if(is_array($e->backtrace))
+                  -foreach($e->backtrace as $item)
+                    %tr
+                      %td{:style=>"white-space:nowrap"}
+                        -if(array_key_exists('function', $item))
+                          +$item['function']
+                        -else
+                          ="-"
+                      %td{:style=>"white-space:nowrap"}
+                        -if(array_key_exists('file', $item))
+                          +$item['file']
+                        -else
+                          ="-"
+                      %td{:style=>"white-space:nowrap"}
+                        -if(array_key_exists('line', $item))
+                          +$item['line']
+                        -else
+                          ="-"
+                      %td{:style=>"white-space:nowrap"}
+                        -if(array_key_exists('params', $item) && count($item['params'])>0)
+                          %table
+                            %tr
+                              %th Name
+                              %th Value
+                            -foreach($item['params'] as $k=>$v)
+                              %tr
+                                %td +$k
+                                %td +$v
+                        -else
+                          ="-"
